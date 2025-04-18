@@ -21,12 +21,9 @@ namespace MusicBot
 
         public static async Task Main(string[] args)
         {
-            string option = args.Length > 0 ? args[0].ToLower() : null;
-
-            if (option == null || (option != "a" && option != "b" && option != "c"))
-            {
-                await jsonParser.setConfig();
-            }
+         
+            string option = "1";
+            await jsonParser.setConfig();
 
             _config = await jsonParser.jsonDeserializer(option);
 
@@ -40,16 +37,16 @@ namespace MusicBot
 
             client = new(discordConfig);   
     
-            var endpoint = new ConnectionEndpoint //replace these
+            var endpoint = new ConnectionEndpoint
             {
-                Hostname = "", 
-                Port = 0000,
+                Hostname = "",//replace
+                Port = 000, //replace
                 Secured = true,
             };
 
-            var lavalinkConfig = new LavalinkConfiguration //replace these
+            var lavalinkConfig = new LavalinkConfiguration
             {
-                Password =  "", 
+                Password =  "",//replace
                 RestEndpoint = endpoint,
                 SocketEndpoint = endpoint,
             };

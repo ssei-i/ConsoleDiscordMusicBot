@@ -42,7 +42,9 @@ namespace MusicBot.config
             config.chatChannel = ulong.Parse(Console.ReadLine());
             Console.WriteLine("Enter your Discord bot token");
             config.discordToken = Console.ReadLine();
+
             var configJson = JsonConvert.SerializeObject(config);
+
             File.WriteAllText("config.json", configJson);
         }
 
