@@ -1,0 +1,108 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj": {}
+  },
+  "projects": {
+    "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj",
+        "projectName": "MusicBot",
+        "projectPath": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj",
+        "packagesPath": "C:\\Users\\rjosh\\.nuget\\packages\\",
+        "outputPath": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\rjosh\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "DSharpPlus": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "DSharpPlus.CommandsNext": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "DSharpPlus.Interactivity": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "DSharpPlus.Lavalink": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "DSharpPlus.VoiceNext": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "DotnetGeminiSDK": {
+              "target": "Package",
+              "version": "[1.0.14, )"
+            },
+            "Google.Apis.YouTube.v3": {
+              "target": "Package",
+              "version": "[1.8.1.970, )"
+            },
+            "Google_GenerativeAI": {
+              "target": "Package",
+              "version": "[2.4.6, )"
+            },
+            "LLamaSharp": {
+              "target": "Package",
+              "version": "[0.23.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
