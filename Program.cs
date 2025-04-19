@@ -6,8 +6,6 @@ using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using System.Text;
 using MusicBot.config;
-using System.Text.Json.Nodes;
-
 
 namespace MusicBot
 {
@@ -130,7 +128,11 @@ namespace MusicBot
                 {
                     await Queue(guildId, voiceChannel, chatChannel, conn);
                 }
-            }while(!command.Contains("Play") || command != "skip" || command != "queue");
+                else if (command == "exit")
+                {
+                    Environment.Exit(0);
+                }
+            }while(!command.Contains("Play") || command != "skip" || command != "queue" || command != "exit");
             
         }
 
@@ -220,7 +222,7 @@ namespace MusicBot
             var queueList = new StringBuilder("QUEUE: \n");
 
             if (conn.CurrentState.CurrentTrack != null)
-            queueList.AppendLine($"Now Playing: {conn.CurrentState.CurrentTrack.Title}");
+            queueList.AppendLine($"Now Playing: {conn.CurrentState.CurrentTrack.Title} - {conn.CurrentState.CurrentTrack.Length} / {conn.CurrentState.PlaybackPosition}");
 
 
             if (QueueList[guildId].Count > 0)

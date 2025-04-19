@@ -11,41 +11,110 @@ namespace MusicBot.config
         public static async Task setConfig()
         {
             string option;
+            string caseb = "1";
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("A. Create a new config file");
-            Console.WriteLine("B. Replace config file values");
+            Console.WriteLine("B. Replace a config value");
             Console.WriteLine("C. Continue");
             do
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 option = Console.ReadLine().ToLower();
-                
-                if (option == "a" || option == "b")
+                if (option == "a")
                 {
-                    await jsonSerializer(option);
+                    await jsonSerializer(option, caseb);
                     return;
+                }
+                else if (option == "b")
+                {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("A. guildId");
+                        Console.WriteLine("B. voice channel");
+                        Console.WriteLine("C. chat channel");
+                        Console.WriteLine("D. bot token");
+                        
+                        do
+                        {
+                            caseb = Console.ReadLine().ToLower();
+
+                            if (caseb == "a")
+                            {
+                                await jsonSerializer(option, caseb);
+                                return;
+                            }
+                            else if (caseb == "b")
+                            {
+                                await jsonSerializer(option, caseb);
+                                return;
+                            }
+                            else if (caseb == "c")
+                            {
+                                await jsonSerializer(option, caseb);
+                                return;
+                            }
+                            else if (caseb == "d")
+                            {
+                                await jsonSerializer(option, caseb);
+                                return;
+                            }
+                        }while(caseb != "a");
                 }
                 else if (option == "c")
                 {
                     await jsonDeserializer(option);
-                    return;
+                    return;      
                 }
             }while(option == "a" || option == "b" || option == "c");
         }
 
-        public static async Task jsonSerializer(string option)
+        public static async Task jsonSerializer(string option, string caseb)
         {
-            var config = new Config();
-            Console.WriteLine("Enter the guild Id (server) that your bot will be accessing");
-            config.guildId = ulong.Parse(Console.ReadLine());
-            Console.WriteLine("Enter the voice channel that your bot will be playing music on");
-            config.voiceChannel = ulong.Parse(Console.ReadLine());
-            Console.WriteLine("Enter the chatroom channel that your bot will be sending messages to");
-            config.chatChannel = ulong.Parse(Console.ReadLine());
-            Console.WriteLine("Enter your Discord bot token");
-            config.discordToken = Console.ReadLine();
+            Config config;
+            if (File.Exists("config.Json"))
+            {
+                config = JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
+            }
+            else
+            {
+                config = new Config();
+            }
+            
+            if (option == "a" || caseb == "a")
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Enter the guild Id (server) that your bot will be accessing");
+                Console.ForegroundColor = ConsoleColor.Red;
+                config.guildId = ulong.Parse(Console.ReadLine());
+            }
+            if (option == "a" || caseb == "b")
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Enter the voice channel that your bot will be playing music on");
+                Console.ForegroundColor = ConsoleColor.Red;
+                config.voiceChannel = ulong.Parse(Console.ReadLine());
+            }
+            if (option == "a" || caseb == "c")
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Enter the chatroom channel that your bot will be sending messages to");
+                Console.ForegroundColor = ConsoleColor.Red;
+                config.chatChannel = ulong.Parse(Console.ReadLine());
+            }
+            if (option == "a" || caseb == "d" )
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Enter your Discord bot token");
+                Console.ForegroundColor = ConsoleColor.Red;
+                config.discordToken = Console.ReadLine();
+            }
 
-            var configJson = JsonConvert.SerializeObject(config);
-
+            string configJson = JsonConvert.SerializeObject(config, Formatting.Indented);
             File.WriteAllText("config.json", configJson);
+
+            if (caseb != null)
+            {
+                await setConfig();
+            }
         }
 
         public static async Task<Config> jsonDeserializer(string option)
@@ -53,7 +122,18 @@ namespace MusicBot.config
             if (File.Exists("config.json"))
             {
                 string json = File.ReadAllText("config.json");
-                Config config = JsonConvert.DeserializeObject<Config>(json);  
+                Config config = JsonConvert.DeserializeObject<Config>(json); 
+                if (config.voiceChannel == default(ulong) || config.chatChannel == default(ulong) || config.guildId == default(ulong) || config.discordToken == null) 
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine
+(@$"A value is Missing:
+    Guild Id = {config.guildId}
+    Voice Channel Id = {config.voiceChannel}
+    Chatroom Id = {config.chatChannel}
+    Discord Token = {config.discordToken}");
+                    await setConfig();
+                }
                 return config;
             }   
             return null;

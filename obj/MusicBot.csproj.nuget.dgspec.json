@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj": {}
+    "D:\\JOSH FILES\\code\\c#\\ConsoleDiscordMusicBot\\MusicBot.csproj": {}
   },
   "projects": {
-    "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj": {
+    "D:\\JOSH FILES\\code\\c#\\ConsoleDiscordMusicBot\\MusicBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj",
+        "projectUniqueName": "D:\\JOSH FILES\\code\\c#\\ConsoleDiscordMusicBot\\MusicBot.csproj",
         "projectName": "MusicBot",
-        "projectPath": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\MusicBot.csproj",
+        "projectPath": "D:\\JOSH FILES\\code\\c#\\ConsoleDiscordMusicBot\\MusicBot.csproj",
         "packagesPath": "C:\\Users\\rjosh\\.nuget\\packages\\",
-        "outputPath": "D:\\JOSH FILES\\code\\c#\\MusicBotUI\\obj\\",
+        "outputPath": "D:\\JOSH FILES\\code\\c#\\ConsoleDiscordMusicBot\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\rjosh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -62,22 +62,6 @@
             "DSharpPlus.VoiceNext": {
               "target": "Package",
               "version": "[4.5.0, )"
-            },
-            "DotnetGeminiSDK": {
-              "target": "Package",
-              "version": "[1.0.14, )"
-            },
-            "Google.Apis.YouTube.v3": {
-              "target": "Package",
-              "version": "[1.8.1.970, )"
-            },
-            "Google_GenerativeAI": {
-              "target": "Package",
-              "version": "[2.4.6, )"
-            },
-            "LLamaSharp": {
-              "target": "Package",
-              "version": "[0.23.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
