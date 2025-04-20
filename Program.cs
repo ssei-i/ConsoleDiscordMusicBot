@@ -15,14 +15,18 @@ namespace MusicBot
 
         public static CommandsNextExtension commands { get; private set; }
 
+        //makes an object for config
         public static Config _config;
 
         public static async Task Main(string[] args)
         {
          
             string option = "1";
+
+            //sets config
             await jsonParser.setConfig();
 
+            //gets the data from config
             _config = await jsonParser.jsonDeserializer(option);
 
             DiscordConfiguration discordConfig = new()
@@ -49,7 +53,7 @@ namespace MusicBot
                 SocketEndpoint = endpoint,
             };
 
-
+            //starts when the bot launches
             client.Ready += OnReady;
 
             var lavalink = client.UseLavalink();      
@@ -58,6 +62,11 @@ namespace MusicBot
             await lavalink.ConnectAsync(lavalinkConfig);
             await Task.Delay(-1);
         }
+
+        //makes a queue dictionary
+        public static readonly Dictionary<DiscordGuild, List<LavalinkTrack>> QueueList = new();
+
+        public static readonly Dictionary<DiscordGuild, bool> Playing = new();
 
         private static async Task OnReady(DiscordClient client, DSharpPlus.EventArgs.ReadyEventArgs e)
         {
@@ -71,7 +80,6 @@ namespace MusicBot
                  await chatChannel.SendMessageAsync("invalid voice channel");
                  return;
             }
-
            
             if (!lavalink.ConnectedNodes.Any())
             {
@@ -79,11 +87,14 @@ namespace MusicBot
                 return;
             }
 
+            //joins the vc
             var node = lavalink.ConnectedNodes.Values.First();
             await node.ConnectAsync(voiceChannel);
             var conn = node.GetGuildConnection(guildId);
             await chatChannel.SendMessageAsync($"Joined <{voiceChannel}>");
 
+
+            //initializes a queue for your guild
             if (!QueueList.ContainsKey(guildId))
             {
                 QueueList[guildId] = new List<LavalinkTrack>();
@@ -94,6 +105,8 @@ namespace MusicBot
         }
 
         private static bool _showPromptAfterPlayback = true;
+
+        //this is the prompth for actions
         private static void ShowPrompt()
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -109,6 +122,7 @@ namespace MusicBot
 
         public static async Task Prompth(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
         {
+            //this handles the actions
             string command;
             do
             { 
@@ -136,41 +150,43 @@ namespace MusicBot
             
         }
 
-        public static readonly Dictionary<DiscordGuild, List<LavalinkTrack>> QueueList = new();
-
-        public static readonly Dictionary<DiscordGuild, bool> Playing = new();
-
         public static async Task PlayMusic(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn, string command)
         {
 
             var lavalink = client.GetLavalink();
             var node = lavalink.ConnectedNodes.Values.First();
+
+            //searching for the track
             var loadResult = await node.Rest.GetTracksAsync(command);
 
+            //if track inst found
             if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
             {           
                 await chatChannel.SendMessageAsync($"Track search failed for {command}.");
-                
             }
     
+            //loads the first result into a variable track
             var track = loadResult.Tracks.First();
         
-
+            //adds the track to the queue
             var queue = QueueList[guildId];
             queue.Add(track);
 
             if (!Playing[guildId])
             {
+                //plays the next track if theres nothing playing
                 await PlayNext(guildId, voiceChannel, chatChannel, conn);
             }
             else
             {
+                //if something is playing it will just send a message that it is added to the queue
                 await chatChannel.SendMessageAsync($"{track.Title} added to queue");
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine($"{track.Title} added to queue");
             }
         }
 
+        //handles playing the track
         public static async Task PlayNext(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
         {
             if (!QueueList.TryGetValue(guildId, out var queue))
@@ -191,7 +207,7 @@ namespace MusicBot
             if (!_showPromptAfterPlayback)
             ShowPrompt();
 
-
+            //the next track plays after the previous one is done
             conn.PlaybackFinished -= PlaybackFinishedHandler;
             conn.PlaybackFinished += PlaybackFinishedHandler;
 
@@ -207,13 +223,16 @@ namespace MusicBot
             }
         }
 
-
+        //skips the current track
         public static async Task Skip(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"{conn.CurrentState.CurrentTrack.Title} Has been skipped");
+            await chatChannel.SendMessageAsync($"{conn.CurrentState.CurrentTrack.Title} Has been skipped");
             await conn.StopAsync();
         }
 
+        //handles queue
         public static async Task Queue(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
         {
 

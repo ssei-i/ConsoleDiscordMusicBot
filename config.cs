@@ -8,6 +8,8 @@ namespace MusicBot.config
 {
     public class jsonParser
     { 
+
+        //handles the config configuration
         public static async Task setConfig()
         {
             string option;
@@ -67,6 +69,7 @@ namespace MusicBot.config
             }while(option == "a" || option == "b" || option == "c");
         }
 
+        //serialization
         public static async Task jsonSerializer(string option, string caseb)
         {
             Config config;
@@ -117,6 +120,7 @@ namespace MusicBot.config
             }
         }
 
+        //deserializer
         public static async Task<Config> jsonDeserializer(string option)
         {
             if (File.Exists("config.json"))
