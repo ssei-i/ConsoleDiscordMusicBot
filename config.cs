@@ -81,31 +81,28 @@ namespace MusicBot.config
             {
                 config = new Config();
             }
-            
+
+            Console.ForegroundColor = ConsoleColor.Green;
             if (option == "a" || caseb == "a")
             {
-                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Enter the guild Id (server) that your bot will be accessing");
                 Console.ForegroundColor = ConsoleColor.Red;
                 config.guildId = ulong.Parse(Console.ReadLine());
             }
             if (option == "a" || caseb == "b")
             {
-                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Enter the voice channel that your bot will be playing music on");
                 Console.ForegroundColor = ConsoleColor.Red;
                 config.voiceChannel = ulong.Parse(Console.ReadLine());
             }
             if (option == "a" || caseb == "c")
             {
-                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Enter the chatroom channel that your bot will be sending messages to");
                 Console.ForegroundColor = ConsoleColor.Red;
                 config.chatChannel = ulong.Parse(Console.ReadLine());
             }
             if (option == "a" || caseb == "d" )
             {
-                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Enter your Discord bot token");
                 Console.ForegroundColor = ConsoleColor.Red;
                 config.discordToken = Console.ReadLine();

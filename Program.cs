@@ -6,6 +6,7 @@ using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using System.Text;
 using MusicBot.config;
+using System.Diagnostics;
 
 namespace MusicBot
 {
@@ -20,7 +21,6 @@ namespace MusicBot
 
         public static async Task Main(string[] args)
         {
-         
             string option = "1";
 
             //sets config
@@ -62,7 +62,6 @@ namespace MusicBot
             await lavalink.ConnectAsync(lavalinkConfig);
             await Task.Delay(-1);
         }
-
         //makes a queue dictionary
         public static readonly Dictionary<DiscordGuild, List<LavalinkTrack>> QueueList = new();
 
@@ -75,15 +74,17 @@ namespace MusicBot
             var chatChannel = await client.GetChannelAsync(_config.chatChannel);
             var voiceChannel = await client.GetChannelAsync(_config.voiceChannel);
 
+            Console.ForegroundColor = ConsoleColor.Blue;
             if (voiceChannel.Type != ChannelType.Voice)
             {
                  await chatChannel.SendMessageAsync("invalid voice channel");
+                 Console.WriteLine("invalid voice channel");
                  return;
             }
-           
             if (!lavalink.ConnectedNodes.Any())
             {
                 await chatChannel.SendMessageAsync("lavalink is dead lol");
+                Console.WriteLine("lavalink is dead lol");
                 return;
             }
 
@@ -101,7 +102,7 @@ namespace MusicBot
                 Playing[guildId] = false;
             }
 
-            await Prompth(guildId,voiceChannel, chatChannel, conn);
+            await Prompth(guildId, voiceChannel, chatChannel, lavalink, node, conn);
         }
 
         private static bool _showPromptAfterPlayback = true;
@@ -115,12 +116,14 @@ namespace MusicBot
     play [query]
     skip
     queue
+    pause
+    resume
     exit");
             Console.ForegroundColor = ConsoleColor.Red;
             _showPromptAfterPlayback = true;
         }
 
-        public static async Task Prompth(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
+        public static async Task Prompth(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
         {
             //this handles the actions
             string command;
@@ -132,33 +135,34 @@ namespace MusicBot
                 if (command.Contains("play"))
                 {
                     command = command.Remove(0, 5);
-                    await PlayMusic(guildId, voiceChannel, chatChannel, conn, command);
+                    await PlayMusic(guildId, voiceChannel, chatChannel, lavalink, node, conn, command);
                 }
                 else if (command == "skip")
                 {
-                    await Skip(guildId, voiceChannel, chatChannel, conn);
+                    await Skip(guildId, voiceChannel, chatChannel, lavalink, node, conn);
                 }
                 else if (command == "queue")
                 {
-                    await Queue(guildId, voiceChannel, chatChannel, conn);
+                    await Queue(guildId, voiceChannel, chatChannel, lavalink, node, conn);
+                }
+                else if (command == "pause")
+                {
+                    await PauseMusic(guildId, voiceChannel, chatChannel, lavalink, node, conn);
+                }
+                else if (command == "resume")
+                {
+                    await ResumeMusic(guildId, voiceChannel, chatChannel, lavalink, node, conn);
                 }
                 else if (command == "exit")
                 {
                     Environment.Exit(0);
                 }
-            }while(!command.Contains("Play") || command != "skip" || command != "queue" || command != "exit");
-            
+            }while(!command.Contains("Play"));        
         }
-
-        public static async Task PlayMusic(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn, string command)
+        public static async Task PlayMusic(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn, string command)
         {
-
-            var lavalink = client.GetLavalink();
-            var node = lavalink.ConnectedNodes.Values.First();
-
             //searching for the track
             var loadResult = await node.Rest.GetTracksAsync(command);
-
             //if track inst found
             if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
             {           
@@ -175,7 +179,7 @@ namespace MusicBot
             if (!Playing[guildId])
             {
                 //plays the next track if theres nothing playing
-                await PlayNext(guildId, voiceChannel, chatChannel, conn);
+                await PlayNext(guildId, voiceChannel, chatChannel, lavalink, node, conn);
             }
             else
             {
@@ -185,9 +189,8 @@ namespace MusicBot
                 Console.WriteLine($"{track.Title} added to queue");
             }
         }
-
         //handles playing the track
-        public static async Task PlayNext(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
+        public static async Task PlayNext(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
         {
             if (!QueueList.TryGetValue(guildId, out var queue))
             {
@@ -218,22 +221,20 @@ namespace MusicBot
                     Playing[guildId] = false;
                     await chatChannel.SendMessageAsync($"{args.Track.Title} finished playing");
                     _showPromptAfterPlayback = false;
-                    await PlayNext(guildId, voiceChannel, chatChannel, sender);
+                    await PlayNext(guildId, voiceChannel, chatChannel, lavalink, node, sender);
                 }
             }
         }
-
         //skips the current track
-        public static async Task Skip(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
+        public static async Task Skip(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine($"{conn.CurrentState.CurrentTrack.Title} Has been skipped");
             await chatChannel.SendMessageAsync($"{conn.CurrentState.CurrentTrack.Title} Has been skipped");
             await conn.StopAsync();
         }
-
         //handles queue
-        public static async Task Queue(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkGuildConnection conn)
+        public static async Task Queue(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
         {
 
             var queue = QueueList[guildId];
@@ -254,7 +255,53 @@ namespace MusicBot
              
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(queueList.ToString());
-            await chatChannel.SendMessageAsync("Place Holder Message");
+        }
+        public static async Task PauseMusic(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            if (conn == null)
+            {
+                await chatChannel.SendMessageAsync($"I am not in a voice channel");
+                Console.WriteLine($"I am not in a voice channel");
+                return;
+            }
+
+            if (conn.CurrentState.CurrentTrack == null)
+            {
+                await chatChannel.SendMessageAsync($"There is no music playing");
+                Console.WriteLine("There is no music playing");
+                return;
+            }
+            else
+            {
+                await chatChannel.SendMessageAsync($"{conn.CurrentState.CurrentTrack.Title} has been paused");
+                Console.WriteLine("{conn.CurrentState.CurrentTrack.Title} has been paused");
+                await conn.PauseAsync();
+                return;
+            }     
+        }
+
+        public static async Task ResumeMusic(DiscordGuild guildId, DiscordChannel voiceChannel, DiscordChannel chatChannel, LavalinkExtension lavalink, LavalinkNodeConnection node, LavalinkGuildConnection conn)
+        {
+            if (conn == null)
+            {
+                await chatChannel.SendMessageAsync($"I am not in a voice channel");
+                Console.WriteLine($"I am not in a voice channel");
+                return;
+            }
+            if (conn.CurrentState.CurrentTrack == null)
+            {
+                await chatChannel.SendMessageAsync($"There is no music playing");
+                Console.WriteLine("There is no music playing");
+                return;
+            }
+            else
+            {
+                await chatChannel.SendMessageAsync($"{conn.CurrentState.CurrentTrack.Title} has been resumed");
+                Console.WriteLine("{conn.CurrentState.CurrentTrack.Title} has been resumed");
+                await conn.ResumeAsync();
+                return;
+            }     
         }
     }
 }
